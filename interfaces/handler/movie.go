@@ -1,35 +1,35 @@
-package service
+package handler
 
 import (
 	"fmt"
 	"movies/domain/usecase"
 	"movies/entity"
-	"movies/utils"
+	"movies/interfaces/response"
 
 	"github.com/gin-gonic/gin"
 )
 
-type MovieService interface {
+type MovieHandler interface {
 	Read(c *gin.Context)
 	ReadByID(c *gin.Context)
 }
 
-type movieService struct {
+type movieHandler struct {
 	usecase usecase.MovieUsecase
 }
 
-func NewMovieService(usecase usecase.MovieUsecase) MovieService {
-	return &movieService{usecase}
+func NewMovieHandler(r *gin.Engine, u usecase.MovieUsecase) MovieHandler {
+	return &movieHandler{u}
 }
 
-func (s *movieService) Read(c *gin.Context) {
+func (s *movieHandler) Read(c *gin.Context) {
 	limit := c.Query("limit")
 	offset := c.Query("offset")
 	fmt.Println(limit)
 	fmt.Println(offset)
 	movie, err := s.usecase.ReadByID("")
 	if err != nil {
-		utils.HandleError(c, 400, "error cuy")
+		response.Error(c, 400, "error cuy")
 		return
 	}
 
@@ -43,21 +43,21 @@ func (s *movieService) Read(c *gin.Context) {
 		},
 	}
 
-	utils.HandleSucces(c, movies)
+	response.Success(c, movies)
 }
 
-func (s *movieService) ReadByID(c *gin.Context) {
+func (s *movieHandler) ReadByID(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		utils.HandleError(c, 401, "error cuy, id na eweuh")
+		response.Error(c, 401, "error cuy, id na eweuh")
 		return
 	}
 
 	movie, err := s.usecase.ReadByID(id)
 	if err != nil {
-		utils.HandleError(c, 400, "error cuy")
+		response.Error(c, 400, "error cuy")
 		return
 	}
 
-	utils.HandleSucces(c, movie)
+	response.Success(c, movie)
 }

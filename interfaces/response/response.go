@@ -1,4 +1,4 @@
-package utils
+package response
 
 import (
 	"movies/entity"
@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandleSucces(c *gin.Context, data interface{}) {
+func Success(c *gin.Context, data interface{}) {
 	responData := entity.Response{
 		Status:  "200",
 		Message: "Success",
@@ -17,7 +17,7 @@ func HandleSucces(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, responData)
 }
 
-func HandleError(c *gin.Context, status int, message string) {
+func Error(c *gin.Context, status int, message string) {
 	responData := entity.Response{
 		Status:  strconv.Itoa(status),
 		Message: message,

@@ -3,30 +3,37 @@ package main
 import (
 	"log"
 	"movies/data/sql"
-	"movies/transport/registrar"
+	"movies/interfaces/registrar"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	g := gin.Default()
+	// registrar
+	rg := registrarGroup(g)
+	registerAllRegistrar(rg)
+	// server
+	runServer(g)
+}
 
+func registrarGroup(g *gin.Engine) []registrar.Registrar {
 	fakeSql := sql.NewFakeSql()
 
-	registrarGroup := []registrar.Registrar{
+	return []registrar.Registrar{
 		registrar.NewMovieRegistrar(g, fakeSql),
-		// registrar.NewMovieRegistrar(g, fakeSql),
-	}
-	registerAllRegistrar(registrarGroup)
-
-	err := g.Run()
-	if err != nil {
-		log.Fatal(err)
 	}
 }
 
 func registerAllRegistrar(registrarGroup []registrar.Registrar) {
 	for i := 0; i < len(registrarGroup); i++ {
 		registrarGroup[i].Register()
+	}
+}
+
+func runServer(g *gin.Engine) {
+	err := g.Run()
+	if err != nil {
+		log.Fatal(err)
 	}
 }

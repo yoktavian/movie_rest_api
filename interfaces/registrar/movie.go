@@ -4,8 +4,7 @@ import (
 	"movies/data/repository"
 	"movies/data/sql"
 	"movies/domain/usecase"
-	"movies/transport/handler"
-	"movies/transport/service"
+	"movies/interfaces/handler"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +21,8 @@ func NewMovieRegistrar(g *gin.Engine, fakeSql sql.FakeSql) Registrar {
 func (r *movieRegistrar) Register() {
 	movieRepo := repository.NewMoveRepository(r.fakeSql)
 	movieUsecase := usecase.NewMovieUsecase(movieRepo)
-	movieService := service.NewMovieService(movieUsecase)
-	handler.NewMovieHandler(r.g, movieService)
+
+	h := handler.NewMovieHandler(r.g, movieUsecase)
+	r.g.GET("/movie", h.Read)
+	r.g.GET("/movie/:id", h.ReadByID)
 }
