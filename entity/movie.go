@@ -1,12 +1,14 @@
 package entity
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type Movie struct {
-	ID     string `sql:"id"`
-	Name   string `sql:"name"`
-	Link   string `sql:"link"`
-	Rating int    `sql:"rating"`
+	ID     string
+	Name   string
+	Link   string
+	Rating int
 }
 
 func (m *Movie) FromMap(result map[string]interface{}) {

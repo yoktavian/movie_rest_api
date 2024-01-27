@@ -1,24 +1,26 @@
 package repository
 
 import (
-	"movies/data/sql"
 	"movies/domain/repository"
 	"movies/entity"
+
+	"gorm.io/gorm"
 )
 
 type movieRepository struct {
-	fakeSql sql.FakeSql
+	dbe *gorm.DB
 }
 
-func NewMoveRepository(fakeSql sql.FakeSql) repository.MovieRepository {
-	return &movieRepository{
-		fakeSql: fakeSql,
-	}
+func NewMoveRepository(dbe *gorm.DB) repository.MovieRepository {
+	return &movieRepository{dbe}
 }
 
 func (r *movieRepository) ReadByID(id string) (entity.Movie, error) {
-	result := r.fakeSql.Get()
 	var movie entity.Movie
-	movie.FromMap(result)
+	res := r.dbe.Table("movie").Select("id", "name", "link", "rating").Where("id = ?", id).Find(&movie)
+	if res.Error != nil {
+		return entity.Movie{}, res.Error
+	}
+
 	return movie, nil
 }

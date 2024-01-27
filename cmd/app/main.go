@@ -2,26 +2,27 @@ package main
 
 import (
 	"log"
-	"movies/data/sql"
+	"movies/data/db"
 	"movies/interfaces/registrar"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func main() {
 	g := gin.Default()
+	// connect db
+	dbe, _ := db.ConnectDB()
 	// registrar
-	rg := registrarGroup(g)
+	rg := registrarGroup(g, dbe)
 	registerAllRegistrar(rg)
 	// server
 	runServer(g)
 }
 
-func registrarGroup(g *gin.Engine) []registrar.Registrar {
-	fakeSql := sql.NewFakeSql()
-
+func registrarGroup(g *gin.Engine, dbe *gorm.DB) []registrar.Registrar {
 	return []registrar.Registrar{
-		registrar.NewMovieRegistrar(g, fakeSql),
+		registrar.NewMovieRegistrar(g, dbe),
 	}
 }
 

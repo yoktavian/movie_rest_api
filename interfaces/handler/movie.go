@@ -29,7 +29,7 @@ func (s *movieHandler) Read(c *gin.Context) {
 	fmt.Println(offset)
 	movie, err := s.usecase.ReadByID("")
 	if err != nil {
-		response.Error(c, 400, "error cuy")
+		response.Error(c, 400, err.Error())
 		return
 	}
 
@@ -55,7 +55,7 @@ func (s *movieHandler) ReadByID(c *gin.Context) {
 
 	movie, err := s.usecase.ReadByID(id)
 	if err != nil {
-		response.Error(c, 400, "error cuy")
+		response.Error(c, 400, err.Error())
 		return
 	}
 

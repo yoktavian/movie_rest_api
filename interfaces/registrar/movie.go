@@ -2,24 +2,24 @@ package registrar
 
 import (
 	"movies/data/repository"
-	"movies/data/sql"
 	"movies/domain/usecase"
 	"movies/interfaces/handler"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type movieRegistrar struct {
-	g       *gin.Engine
-	fakeSql sql.FakeSql
+	g   *gin.Engine
+	dbe *gorm.DB
 }
 
-func NewMovieRegistrar(g *gin.Engine, fakeSql sql.FakeSql) Registrar {
-	return &movieRegistrar{g, fakeSql}
+func NewMovieRegistrar(g *gin.Engine, dbe *gorm.DB) Registrar {
+	return &movieRegistrar{g, dbe}
 }
 
 func (r *movieRegistrar) Register() {
-	movieRepo := repository.NewMoveRepository(r.fakeSql)
+	movieRepo := repository.NewMoveRepository(r.dbe)
 	movieUsecase := usecase.NewMovieUsecase(movieRepo)
 
 	h := handler.NewMovieHandler(r.g, movieUsecase)
