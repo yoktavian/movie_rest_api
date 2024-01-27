@@ -1,23 +1,32 @@
 package main
 
 import (
-	"fmt"
-	"movies/data/repository"
+	"log"
 	"movies/data/sql"
-	"movies/domain/usecase"
+	"movies/transport/registrar"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	g := gin.Default()
+
 	fakeSql := sql.NewFakeSql()
-	movieRepo := repository.NewMoveRepository(fakeSql)
-	movieUsecase := usecase.MovieUsecase(movieRepo)
-	res, err := movieUsecase.GetMovieByID("1")
+
+	registrarGroup := []registrar.Registrar{
+		registrar.NewMovieRegistrar(g, fakeSql),
+		// registrar.NewMovieRegistrar(g, fakeSql),
+	}
+	registerAllRegistrar(registrarGroup)
+
+	err := g.Run()
 	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(res.ID)
-		fmt.Println(res.Name)
-		fmt.Println(res.Link)
-		fmt.Println(res.Rating)
+		log.Fatal(err)
+	}
+}
+
+func registerAllRegistrar(registrarGroup []registrar.Registrar) {
+	for i := 0; i < len(registrarGroup); i++ {
+		registrarGroup[i].Register()
 	}
 }

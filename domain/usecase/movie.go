@@ -6,7 +6,7 @@ import (
 )
 
 type MovieUsecase interface {
-	GetMovieByID(id string) (entity.Movie, error)
+	ReadByID(id string) (entity.Movie, error)
 }
 
 type movieUsecase struct {
@@ -19,6 +19,6 @@ func NewMovieUsecase(movieRepo repository.MovieRepository) MovieUsecase {
 	}
 }
 
-func (u *movieUsecase) GetMovieByID(id string) (entity.Movie, error) {
-	return u.MovieRepo.GetMovieByID(id)
+func (u *movieUsecase) ReadByID(id string) (entity.Movie, error) {
+	return u.MovieRepo.ReadByID(id)
 }

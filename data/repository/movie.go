@@ -16,7 +16,7 @@ func NewMoveRepository(fakeSql sql.FakeSql) repository.MovieRepository {
 	}
 }
 
-func (r *movieRepository) GetMovieByID(id string) (entity.Movie, error) {
+func (r *movieRepository) ReadByID(id string) (entity.Movie, error) {
 	result := r.fakeSql.Get()
 	var movie entity.Movie
 	movie.FromMap(result)
