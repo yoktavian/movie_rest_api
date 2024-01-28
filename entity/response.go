@@ -1,7 +1,7 @@
 package entity
 
 type Response struct {
-	Status  string
+	RC      string
 	Message string
 	Data    interface{}
 }

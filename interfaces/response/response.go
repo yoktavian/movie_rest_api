@@ -1,26 +1,52 @@
 package response
 
 import (
+	"fmt"
 	"movies/entity"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Success(c *gin.Context, data interface{}) {
-	responData := entity.Response{
-		Status:  "200",
-		Message: "Success",
-		Data:    data,
+type GeneralPartnerResponseCode int
+
+const (
+	Successfull GeneralPartnerResponseCode = 200
+	BadRequest  GeneralPartnerResponseCode = 400
+)
+
+var (
+	responseMessage = map[GeneralPartnerResponseCode]string{
+		Successfull: "Success",
+		BadRequest:  "Bad Request",
 	}
-	c.JSON(http.StatusOK, responData)
+)
+
+func (rc GeneralPartnerResponseCode) Message() string {
+	message, exist := responseMessage[rc]
+	if !exist {
+		return "Other error"
+	}
+
+	return message
 }
 
-func Error(c *gin.Context, status int, message string) {
+func PublishCustomError(c *gin.Context, rc int, message string) {
 	responData := entity.Response{
-		Status:  strconv.Itoa(status),
+		RC:      fmt.Sprintf("%v", rc),
 		Message: message,
 	}
-	c.JSON(status, responData)
+
+	c.JSON(int(rc), responData)
+}
+
+func Publish(c *gin.Context, rc GeneralPartnerResponseCode, data interface{}) {
+	message := rc.Message()
+
+	responData := entity.Response{
+		RC:      fmt.Sprintf("%v", rc),
+		Message: message,
+		Data:    data,
+	}
+
+	c.JSON(int(rc), responData)
 }

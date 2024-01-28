@@ -1,10 +1,9 @@
 package handler
 
 import (
-	"fmt"
 	"movies/domain/usecase"
-	"movies/entity"
 	"movies/interfaces/response"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,41 +22,32 @@ func NewMovieHandler(r *gin.Engine, u usecase.MovieUsecase) MovieHandler {
 }
 
 func (s *movieHandler) Read(c *gin.Context) {
-	limit := c.Query("limit")
-	offset := c.Query("offset")
-	fmt.Println(limit)
-	fmt.Println(offset)
-	movie, err := s.usecase.ReadByID("")
+	limitQuery := c.Query("limit")
+	offsetQuery := c.Query("offset")
+	limit, err := strconv.Atoi(limitQuery)
+	offset, err := strconv.Atoi(offsetQuery)
+
+	movies, err := s.usecase.Read(limit, offset)
 	if err != nil {
-		response.Error(c, 400, err.Error())
+		response.Publish(c, response.BadRequest, nil)
 		return
 	}
 
-	movies := []entity.Movie{
-		movie,
-		{
-			ID:     "5",
-			Name:   "Other movie",
-			Link:   "other link",
-			Rating: 1,
-		},
-	}
-
-	response.Success(c, movies)
+	response.Publish(c, response.Successfull, movies)
 }
 
 func (s *movieHandler) ReadByID(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		response.Error(c, 401, "error cuy, id na eweuh")
+		response.Publish(c, response.BadRequest, nil)
 		return
 	}
 
-	movie, err := s.usecase.ReadByID(id)
+	_, err := s.usecase.ReadByID(id)
 	if err != nil {
-		response.Error(c, 400, err.Error())
+		response.Publish(c, response.BadRequest, nil)
 		return
 	}
 
-	response.Success(c, movie)
+	response.Publish(c, 501, nil)
 }

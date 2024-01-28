@@ -6,6 +6,7 @@ import (
 )
 
 type MovieUsecase interface {
+	Read(limit int, offset int) ([]entity.Movie, error)
 	ReadByID(id string) (entity.Movie, error)
 }
 
@@ -17,6 +18,10 @@ func NewMovieUsecase(movieRepo repository.MovieRepository) MovieUsecase {
 	return &movieUsecase{
 		MovieRepo: movieRepo,
 	}
+}
+
+func (u *movieUsecase) Read(limit int, offset int) ([]entity.Movie, error) {
+	return u.MovieRepo.Read(limit, offset)
 }
 
 func (u *movieUsecase) ReadByID(id string) (entity.Movie, error) {
