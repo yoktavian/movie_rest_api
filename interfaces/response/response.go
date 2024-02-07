@@ -30,7 +30,7 @@ func (rc GeneralPartnerResponseCode) Message() string {
 	return message
 }
 
-func PublishCustomError(c *gin.Context, rc int, message string) {
+func PublishCustomError(c *gin.Context, rc GeneralPartnerResponseCode, message string) {
 	responData := entity.Response{
 		RC:      fmt.Sprintf("%v", rc),
 		Message: message,

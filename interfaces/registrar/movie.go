@@ -25,4 +25,5 @@ func (r *movieRegistrar) Register() {
 	h := handler.NewMovieHandler(r.g, movieUsecase)
 	r.g.GET("/movie", h.Read)
 	r.g.GET("/movie/:id", h.ReadByID)
+	r.g.POST("/movie", h.Create)
 }
