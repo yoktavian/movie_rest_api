@@ -1,24 +1,51 @@
 package repository
 
 import (
-	"movies/data/sql"
 	"movies/domain/repository"
 	"movies/entity"
+
+	"gorm.io/gorm"
 )
 
 type movieRepository struct {
-	fakeSql sql.FakeSql
+	dbe *gorm.DB
 }
 
-func NewMoveRepository(fakeSql sql.FakeSql) repository.MovieRepository {
-	return &movieRepository{
-		fakeSql: fakeSql,
+func NewMoveRepository(dbe *gorm.DB) repository.MovieRepository {
+	return &movieRepository{dbe}
+}
+
+func (r *movieRepository) Create(request entity.MovieRequest) (entity.Movie, error) {
+	movie := entity.Movie{
+		ID:     request.ID,
+		Name:   request.Name,
+		Link:   request.Link,
+		Rating: request.Rating,
 	}
+	res := r.dbe.Table("movie").Create(&movie)
+	if res.Error != nil {
+		return entity.Movie{}, res.Error
+	}
+
+	return movie, nil
 }
 
-func (r *movieRepository) GetMovieByID(id string) (entity.Movie, error) {
-	result := r.fakeSql.Get()
+func (r *movieRepository) Read(limit int, offset int) ([]entity.Movie, error) {
+	var movies []entity.Movie
+	res := r.dbe.Table("movie").Select("id", "name", "link", "rating").Limit(limit).Offset(offset).Find(&movies)
+	if res.Error != nil {
+		return []entity.Movie{}, res.Error
+	}
+
+	return movies, nil
+}
+
+func (r *movieRepository) ReadByID(id string) (entity.Movie, error) {
 	var movie entity.Movie
-	movie.FromMap(result)
+	res := r.dbe.Table("movie").Select("id", "name", "link", "rating").Where("id = ?", id).Find(&movie)
+	if res.Error != nil {
+		return entity.Movie{}, res.Error
+	}
+
 	return movie, nil
 }
