@@ -3,6 +3,8 @@ package usecase
 import (
 	"movies/domain/repository"
 	"movies/entity"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type MovieUsecase interface {
@@ -13,15 +15,25 @@ type MovieUsecase interface {
 
 type movieUsecase struct {
 	MovieRepo repository.MovieRepository
+	Validator *validator.Validate
 }
 
-func NewMovieUsecase(movieRepo repository.MovieRepository) MovieUsecase {
+func NewMovieUsecase(
+	movieRepo repository.MovieRepository,
+	validator *validator.Validate,
+) MovieUsecase {
 	return &movieUsecase{
 		MovieRepo: movieRepo,
+		Validator: validator,
 	}
 }
 
 func (u *movieUsecase) Create(request entity.MovieRequest) (entity.Movie, error) {
+	err := u.Validator.Struct(request)
+	if err != nil {
+		return entity.Movie{}, err
+	}
+
 	return u.MovieRepo.Create(request)
 }
 

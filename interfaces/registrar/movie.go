@@ -6,6 +6,7 @@ import (
 	"movies/interfaces/handler"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -19,8 +20,10 @@ func NewMovieRegistrar(g *gin.Engine, dbe *gorm.DB) Registrar {
 }
 
 func (r *movieRegistrar) Register() {
+	validator := validator.New(validator.WithRequiredStructEnabled())
+	
 	movieRepo := repository.NewMoveRepository(r.dbe)
-	movieUsecase := usecase.NewMovieUsecase(movieRepo)
+	movieUsecase := usecase.NewMovieUsecase(movieRepo, validator)
 
 	h := handler.NewMovieHandler(r.g, movieUsecase)
 	r.g.GET("/movie", h.Read)
