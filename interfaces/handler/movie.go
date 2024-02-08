@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"movies/domain/usecase"
 	"movies/entity"
 	"movies/interfaces/response"
@@ -16,10 +17,10 @@ type MovieHandler interface {
 }
 
 type movieHandler struct {
-	usecase usecase.MovieUsecase
+	usecases map[string]usecase.MovieUsecase
 }
 
-func NewMovieHandler(r *gin.Engine, u usecase.MovieUsecase) MovieHandler {
+func NewMovieHandler(r *gin.Engine, u map[string]usecase.MovieUsecase) MovieHandler {
 	return &movieHandler{u}
 }
 
@@ -31,7 +32,8 @@ func (s *movieHandler) Create(c *gin.Context) {
 		return
 	}
 
-	movie, err := s.usecase.Create(movieRequest)
+	movie, err := s.usecases[s.getMovieType(movieRequest.Type)].Create(movieRequest)
+
 	if err != nil {
 		response.PublishCustomError(c, response.BadRequest, err.Error())
 		return
@@ -46,7 +48,7 @@ func (s *movieHandler) Read(c *gin.Context) {
 	limit, err := strconv.Atoi(limitQuery)
 	offset, err := strconv.Atoi(offsetQuery)
 
-	movies, err := s.usecase.Read(limit, offset)
+	movies, err := s.usecases[s.getMovieType("cmr")].Read(limit, offset)
 	if err != nil {
 		response.Publish(c, response.BadRequest, nil)
 		return
@@ -62,11 +64,19 @@ func (s *movieHandler) ReadByID(c *gin.Context) {
 		return
 	}
 
-	_, err := s.usecase.ReadByID(id)
+	_, err := s.usecases[s.getMovieType("")].ReadByID(id)
 	if err != nil {
 		response.Publish(c, response.BadRequest, nil)
 		return
 	}
 
 	response.Publish(c, 501, nil)
+}
+
+func (s *movieHandler) getMovieType(payloadMovieType string) string {
+	if payloadMovieType == "" {
+		return "df"
+	}
+
+	return payloadMovieType
 }
