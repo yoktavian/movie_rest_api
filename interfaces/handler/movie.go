@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"movies/domain/usecase"
 	"movies/entity"
 	"movies/interfaces/response"
