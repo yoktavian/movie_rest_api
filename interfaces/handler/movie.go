@@ -31,7 +31,8 @@ func (s *movieHandler) Create(c *gin.Context) {
 		return
 	}
 
-	movie, err := s.usecases[s.getMovieType(movieRequest.Type)].Create(movieRequest)
+	// depends on type, need to differentiate the ID for each movie
+	movie, err := s.usecases[movieRequest.Type].Create(movieRequest)
 
 	if err != nil {
 		response.PublishCustomError(c, response.BadRequest, err.Error())
@@ -47,7 +48,8 @@ func (s *movieHandler) Read(c *gin.Context) {
 	limit, err := strconv.Atoi(limitQuery)
 	offset, err := strconv.Atoi(offsetQuery)
 
-	movies, err := s.usecases[s.getMovieType("cmr")].Read(limit, offset)
+	// use base, no need to differentiate based on movie type
+	movies, err := s.usecases[""].Read(limit, offset)
 	if err != nil {
 		response.Publish(c, response.BadRequest, nil)
 		return
@@ -63,19 +65,12 @@ func (s *movieHandler) ReadByID(c *gin.Context) {
 		return
 	}
 
-	_, err := s.usecases[s.getMovieType("")].ReadByID(id)
+	// use base, no need to differentiate based on movie type
+	_, err := s.usecases[""].ReadByID(id)
 	if err != nil {
 		response.Publish(c, response.BadRequest, nil)
 		return
 	}
 
 	response.Publish(c, 501, nil)
-}
-
-func (s *movieHandler) getMovieType(payloadMovieType string) string {
-	if payloadMovieType == "" {
-		return "df"
-	}
-
-	return payloadMovieType
 }
