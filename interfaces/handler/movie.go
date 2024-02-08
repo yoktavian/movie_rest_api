@@ -45,8 +45,8 @@ func (s *movieHandler) Create(c *gin.Context) {
 func (s *movieHandler) Read(c *gin.Context) {
 	limitQuery := c.Query("limit")
 	offsetQuery := c.Query("offset")
-	limit, err := strconv.Atoi(limitQuery)
-	offset, err := strconv.Atoi(offsetQuery)
+	limit, _ := strconv.Atoi(limitQuery)
+	offset, _ := strconv.Atoi(offsetQuery)
 
 	// use base, no need to differentiate based on movie type
 	movies, err := s.usecases[""].Read(limit, offset)
