@@ -16,10 +16,10 @@ type MovieHandler interface {
 }
 
 type movieHandler struct {
-	usecase usecase.MovieUsecase
+	usecases map[string]usecase.MovieUsecase
 }
 
-func NewMovieHandler(r *gin.Engine, u usecase.MovieUsecase) MovieHandler {
+func NewMovieHandler(r *gin.Engine, u map[string]usecase.MovieUsecase) MovieHandler {
 	return &movieHandler{u}
 }
 
@@ -31,7 +31,9 @@ func (s *movieHandler) Create(c *gin.Context) {
 		return
 	}
 
-	movie, err := s.usecase.Create(movieRequest)
+	// depends on type, need to differentiate the ID for each movie
+	movie, err := s.usecases[movieRequest.Type].Create(movieRequest)
+
 	if err != nil {
 		response.PublishCustomError(c, response.BadRequest, err.Error())
 		return
@@ -43,10 +45,11 @@ func (s *movieHandler) Create(c *gin.Context) {
 func (s *movieHandler) Read(c *gin.Context) {
 	limitQuery := c.Query("limit")
 	offsetQuery := c.Query("offset")
-	limit, err := strconv.Atoi(limitQuery)
-	offset, err := strconv.Atoi(offsetQuery)
+	limit, _ := strconv.Atoi(limitQuery)
+	offset, _ := strconv.Atoi(offsetQuery)
 
-	movies, err := s.usecase.Read(limit, offset)
+	// use base, no need to differentiate based on movie type
+	movies, err := s.usecases[""].Read(limit, offset)
 	if err != nil {
 		response.Publish(c, response.BadRequest, nil)
 		return
@@ -62,7 +65,8 @@ func (s *movieHandler) ReadByID(c *gin.Context) {
 		return
 	}
 
-	_, err := s.usecase.ReadByID(id)
+	// use base, no need to differentiate based on movie type
+	_, err := s.usecases[""].ReadByID(id)
 	if err != nil {
 		response.Publish(c, response.BadRequest, nil)
 		return

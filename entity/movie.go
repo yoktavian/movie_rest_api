@@ -8,8 +8,9 @@ type Movie struct {
 }
 
 type MovieRequest struct {
-	ID     string
-	Name   string
+	ID     string `validate:"required"`
+	Name   string `validate:"required"`
 	Link   string
 	Rating int
+	Type   string
 }

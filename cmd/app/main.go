@@ -38,3 +38,4 @@ func runServer(g *gin.Engine) {
 		log.Fatal(err)
 	}
 }
+
