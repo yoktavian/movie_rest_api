@@ -32,7 +32,7 @@ func (r *movieRepository) Create(request entity.MovieRequest) (entity.Movie, err
 
 func (r *movieRepository) Read(limit int, offset int) ([]entity.Movie, error) {
 	var movies []entity.Movie
-	res := r.dbe.Table("movie").Select("id", "name", "link", "rating").Limit(limit).Offset(offset).Find(&movies)
+	res := r.dbe.Table("movie").Select("movie.id", "movie.name", "movie.link", "movie.rating", "movie_creator.name", "movie_creator.company").Joins("left join movie_creator on movie_creator.id = movie.creator_id").Limit(limit).Offset(offset).Find(&movies)
 	if res.Error != nil {
 		return []entity.Movie{}, res.Error
 	}

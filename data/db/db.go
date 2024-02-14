@@ -14,7 +14,7 @@ type DbConfig struct {
 }
 
 func ConnectDB() (*gorm.DB, error) {
-	dsn := "root:@tcp(127.0.0.1:3306)/movie-dev?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:@tcp(127.0.0.1:3306)/playground-movie?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err

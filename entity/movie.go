@@ -5,6 +5,12 @@ type Movie struct {
 	Name   string
 	Link   string
 	Rating int
+	MovieCreator
+}
+
+type MovieCreator struct {
+	CreatorName string `gorm:"column:name"`
+	Company    string
 }
 
 type MovieRequest struct {
