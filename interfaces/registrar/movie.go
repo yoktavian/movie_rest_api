@@ -24,13 +24,12 @@ func (r *movieRegistrar) Register() {
 
 	movieRepo := repository.NewMoveRepository(r.dbe)
 	baseMovieUsecase := usecase.NewBaseMovieUsecase(movieRepo, validator)
-	cmrMovieUsecase := usecase.NewMovieRomanceComedyUsecase(baseMovieUsecase)
-	hrrMovieUsecase := usecase.NewMovieMovieHorrorUsecaseUsecase(baseMovieUsecase)
+	comedyMovieUsecase := usecase.NewMovieRomanceComedyUsecase(baseMovieUsecase)
+	horrorMovieUsecase := usecase.NewMovieMovieHorrorUsecaseUsecase(baseMovieUsecase)
 
 	usecases := map[string]usecase.MovieUsecase{
-		"":    baseMovieUsecase,
-		"cmr": cmrMovieUsecase,
-		"hrr": hrrMovieUsecase,
+		"comedy": comedyMovieUsecase,
+		"horror": horrorMovieUsecase,
 	}
 
 	h := handler.NewMovieHandler(r.g, usecases)
