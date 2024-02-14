@@ -1,0 +1,5 @@
+CREATE TABLE movie_creator (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  name VARCHAR(254),
+  company VARCHAR(254)
+);
